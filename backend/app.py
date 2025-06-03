@@ -1,4 +1,3 @@
-# Current app.py core functionality
 from flask import Flask, render_template, request, Response
 from dbcontext import db_data, db_delete, db_add, health_check
 from person import Person
@@ -23,5 +22,20 @@ def add():
                        body["age"], body["address"], body["workplace"])
         return db_add(person)
     return Response(status=404)
+
+# ⬇️ הוספת ה־health check כאן
+@app.route("/health")
+def health():
+    health_messages = []
+    try:
+        app.logger.info("Application is running")
+        health_messages.append("Application: Healthy")
+    except Exception as e:
+        app.logger.error(f"Application health check failed: {e}")
+        health_messages.append("Application: Not Healthy")
+    combined_health_status = "\n".join(health_messages)
+    return combined_health_status
+
+# ⬇️ השארת הפעלת השרת
 if __name__ == "__main__":
     app.run(host='0.0.0.0', port=5000)
